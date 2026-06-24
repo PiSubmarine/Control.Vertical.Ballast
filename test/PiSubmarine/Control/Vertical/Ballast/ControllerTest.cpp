@@ -60,7 +60,9 @@ namespace PiSubmarine::Control::Vertical::Ballast
                 .DerivativeGainSeconds = 0.0,
                 .IntegralLimitMetersSeconds = 50.0,
                 .DepthDeadband = 0.05_m,
-                .MaximumBallastCorrection = NormalizedFraction{0.5}}};
+                .MaximumBallastCorrection = NormalizedFraction{0.5},
+                .InitialEquilibriumBallastFill = ::PiSubmarine::Ballast::BallastFillFraction{0.25},
+                .LearnEquilibriumBallastFromTelemetry = true}};
 
         EXPECT_CALL(depthProvider, GetState())
             .WillOnce(Return(Error::Api::Result<::PiSubmarine::Depth::Telemetry::Api::State>{
@@ -242,5 +244,59 @@ namespace PiSubmarine::Control::Vertical::Ballast
         const auto result = controller.SetTarget(Api::Command::SetDepthTargetTo(3.0_m));
 
         EXPECT_FALSE(result.has_value());
+    }
+
+    TEST(ControllerTest, DisabledLearningUsesConfiguredInitialEquilibriumGuess)
+    {
+        StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
+        StrictMock<::PiSubmarine::Ballast::Telemetry::Api::IProviderMock> ballastTelemetryProvider;
+        StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+        Controller controller{
+            ballastController,
+            ballastTelemetryProvider,
+            depthProvider,
+            Controller::Config{
+                .ProportionalGain = 0.2,
+                .IntegralGainPerSecond = 0.0,
+                .DerivativeGainSeconds = 0.0,
+                .IntegralLimitMetersSeconds = 50.0,
+                .DepthDeadband = 0.05_m,
+                .MaximumBallastCorrection = NormalizedFraction{0.5},
+                .InitialEquilibriumBallastFill = ::PiSubmarine::Ballast::BallastFillFraction{0.7},
+                .LearnEquilibriumBallastFromTelemetry = false}};
+
+        ASSERT_TRUE(controller.SetTarget(Api::Command::SetDepthTargetTo(5.0_m)).has_value());
+
+        EXPECT_CALL(depthProvider, GetState())
+            .WillOnce(Return(Error::Api::Result<::PiSubmarine::Depth::Telemetry::Api::State>{
+                ::PiSubmarine::Depth::Telemetry::Api::State{.Depth = 5.01_m}}));
+        EXPECT_CALL(ballastController, SetTargetPosition(BallastFillNear(0.7)))
+            .WillOnce(Return(Error::Api::Result<void>{}));
+
+        controller.Tick(std::chrono::seconds{1}, std::chrono::milliseconds{100});
+    }
+
+    TEST(ControllerTest, DisabledLearningDoesNotRequireBallastTelemetryDuringDepthModeSetup)
+    {
+        StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
+        StrictMock<::PiSubmarine::Ballast::Telemetry::Api::IProviderMock> ballastTelemetryProvider;
+        StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+        Controller controller{
+            ballastController,
+            ballastTelemetryProvider,
+            depthProvider,
+            Controller::Config{
+                .ProportionalGain = 0.2,
+                .IntegralGainPerSecond = 0.0,
+                .DerivativeGainSeconds = 0.0,
+                .IntegralLimitMetersSeconds = 50.0,
+                .DepthDeadband = 0.05_m,
+                .MaximumBallastCorrection = NormalizedFraction{0.5},
+                .InitialEquilibriumBallastFill = ::PiSubmarine::Ballast::BallastFillFraction{0.35},
+                .LearnEquilibriumBallastFromTelemetry = false}};
+
+        const auto result = controller.SetTarget(Api::Command::SetDepthTargetTo(3.0_m));
+
+        EXPECT_TRUE(result.has_value());
     }
 }

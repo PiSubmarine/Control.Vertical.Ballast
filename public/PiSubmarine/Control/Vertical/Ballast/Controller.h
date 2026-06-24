@@ -26,6 +26,9 @@ namespace PiSubmarine::Control::Vertical::Ballast
             double IntegralLimitMetersSeconds = 50.0;
             Meters DepthDeadband = 0.05_m;
             NormalizedFraction MaximumBallastCorrection = NormalizedFraction{0.5};
+            ::PiSubmarine::Ballast::BallastFillFraction InitialEquilibriumBallastFill =
+                ::PiSubmarine::Ballast::BallastFillFraction{NormalizedFraction{0.5}};
+            bool LearnEquilibriumBallastFromTelemetry = true;
         };
 
         Controller(
@@ -56,8 +59,7 @@ namespace PiSubmarine::Control::Vertical::Ballast
         Config m_Config;
         Mode m_Mode = Mode::SetBallastPosition;
         Meters m_TargetDepth = 0.0_m;
-        ::PiSubmarine::Ballast::BallastFillFraction m_BallastBias =
-            ::PiSubmarine::Ballast::BallastFillFraction::Empty();
+        ::PiSubmarine::Ballast::BallastFillFraction m_BallastBias;
         double m_IntegralError = 0.0;
         std::optional<double> m_PreviousDepthError;
     };
