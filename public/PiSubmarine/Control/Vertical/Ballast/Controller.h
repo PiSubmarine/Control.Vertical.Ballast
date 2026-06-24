@@ -4,7 +4,6 @@
 #include <optional>
 
 #include "PiSubmarine/Ballast/Api/IController.h"
-#include "PiSubmarine/Ballast/Telemetry/Api/IProvider.h"
 #include "PiSubmarine/Control/Vertical/Api/IController.h"
 #include "PiSubmarine/Depth/Telemetry/Api/IProvider.h"
 #include "PiSubmarine/Meters.h"
@@ -28,12 +27,10 @@ namespace PiSubmarine::Control::Vertical::Ballast
             NormalizedFraction MaximumBallastCorrection = NormalizedFraction{0.5};
             ::PiSubmarine::Ballast::BallastFillFraction InitialEquilibriumBallastFill =
                 ::PiSubmarine::Ballast::BallastFillFraction{NormalizedFraction{0.5}};
-            bool LearnEquilibriumBallastFromTelemetry = true;
         };
 
         Controller(
             ::PiSubmarine::Ballast::Api::IController& ballastController,
-            ::PiSubmarine::Ballast::Telemetry::Api::IProvider& ballastTelemetryProvider,
             ::PiSubmarine::Depth::Telemetry::Api::IProvider& depthProvider,
             const Config& config = Config{}) noexcept;
 
@@ -54,7 +51,6 @@ namespace PiSubmarine::Control::Vertical::Ballast
         [[nodiscard]] static double ClampSymmetric(double value, double limit) noexcept;
 
         ::PiSubmarine::Ballast::Api::IController& m_BallastController;
-        ::PiSubmarine::Ballast::Telemetry::Api::IProvider& m_BallastTelemetryProvider;
         ::PiSubmarine::Depth::Telemetry::Api::IProvider& m_DepthProvider;
         Config m_Config;
         Mode m_Mode = Mode::SetBallastPosition;

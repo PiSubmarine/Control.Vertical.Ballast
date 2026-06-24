@@ -9,11 +9,9 @@ namespace PiSubmarine::Control::Vertical::Ballast
 {
     Controller::Controller(
         ::PiSubmarine::Ballast::Api::IController& ballastController,
-        ::PiSubmarine::Ballast::Telemetry::Api::IProvider& ballastTelemetryProvider,
         ::PiSubmarine::Depth::Telemetry::Api::IProvider& depthProvider,
         const Config& config) noexcept
         : m_BallastController(ballastController)
-        , m_BallastTelemetryProvider(ballastTelemetryProvider)
         , m_DepthProvider(depthProvider)
         , m_Config(config)
         , m_BallastBias(config.InitialEquilibriumBallastFill)
@@ -72,26 +70,6 @@ namespace PiSubmarine::Control::Vertical::Ballast
 
     Error::Api::Result<void> Controller::ConfigureDepthMode(const Meters targetDepth, const Mode mode)
     {
-        if (m_Config.LearnEquilibriumBallastFromTelemetry)
-        {
-            const auto ballastStateResult = m_BallastTelemetryProvider.GetState();
-            if (!ballastStateResult.has_value() || !ballastStateResult->Position.has_value())
-            {
-                const auto failSafeResult = FailSafeToSurface();
-                if (!failSafeResult.has_value())
-                {
-                    return failSafeResult;
-                }
-
-                return ballastStateResult.has_value()
-                    ? Error::Api::Result<void>{std::unexpected(
-                        Error::Api::MakeError(Error::Api::ErrorCondition::NotReady))}
-                    : Error::Api::Result<void>{std::unexpected(ballastStateResult.error())};
-            }
-
-            m_BallastBias = *ballastStateResult->Position;
-        }
-
         m_Mode = mode;
         m_TargetDepth = targetDepth;
         m_IntegralError = 0.0;
