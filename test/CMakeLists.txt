@@ -16,6 +16,7 @@ PiSubmarineInitTarget(${PISUBMARINE_MODULE_NAME}.Test)
 
 target_link_libraries(${PISUBMARINE_MODULE_NAME}.Test PRIVATE ${PISUBMARINE_MODULE_NAME})
 target_link_libraries(${PISUBMARINE_MODULE_NAME}.Test PRIVATE PiSubmarine.Ballast.Api.Mock)
+target_link_libraries(${PISUBMARINE_MODULE_NAME}.Test PRIVATE PiSubmarine.Ballast.Telemetry.Api.Mock)
 target_link_libraries(${PISUBMARINE_MODULE_NAME}.Test PRIVATE PiSubmarine.Depth.Telemetry.Api.Mock)
 target_link_libraries(${PISUBMARINE_MODULE_NAME}.Test PRIVATE GTest::gmock_main)
 include(GoogleTest)

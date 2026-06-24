@@ -10,6 +10,9 @@ PiSubmarineInitTarget(${PISUBMARINE_MODULE_NAME})
 PiSubmarineAddDependency("https://github.com/PiSubmarine/Ballast.Api.git" "")
 target_link_libraries(${PISUBMARINE_MODULE_NAME} PUBLIC PiSubmarine.Ballast.Api)
 
+PiSubmarineAddDependency("https://github.com/PiSubmarine/Ballast.Telemetry.Api.git" "")
+target_link_libraries(${PISUBMARINE_MODULE_NAME} PUBLIC PiSubmarine.Ballast.Telemetry.Api)
+
 PiSubmarineAddDependency("https://github.com/PiSubmarine/Control.Vertical.Api.git" "")
 target_link_libraries(${PISUBMARINE_MODULE_NAME} PUBLIC PiSubmarine.Control.Vertical.Api)
 
