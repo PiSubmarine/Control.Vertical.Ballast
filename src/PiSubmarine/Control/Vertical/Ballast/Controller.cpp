@@ -9,6 +9,13 @@ namespace PiSubmarine::Control::Vertical::Ballast
 {
     Controller::Controller(
         ::PiSubmarine::Ballast::Api::IController& ballastController,
+        ::PiSubmarine::Depth::Telemetry::Api::IProvider& depthProvider) noexcept
+        : Controller(ballastController, depthProvider, Config{})
+    {
+    }
+
+    Controller::Controller(
+        ::PiSubmarine::Ballast::Api::IController& ballastController,
         ::PiSubmarine::Depth::Telemetry::Api::IProvider& depthProvider,
         const Config& config) noexcept
         : m_BallastController(ballastController)

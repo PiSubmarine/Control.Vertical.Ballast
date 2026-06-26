@@ -32,7 +32,11 @@ namespace PiSubmarine::Control::Vertical::Ballast
         Controller(
             ::PiSubmarine::Ballast::Api::IController& ballastController,
             ::PiSubmarine::Depth::Telemetry::Api::IProvider& depthProvider,
-            const Config& config = Config{}) noexcept;
+            const Config& config) noexcept;
+
+        Controller(
+            ::PiSubmarine::Ballast::Api::IController& ballastController,
+            ::PiSubmarine::Depth::Telemetry::Api::IProvider& depthProvider) noexcept;
 
         [[nodiscard]] Error::Api::Result<void> SetTarget(const Api::Command& target) override;
         void Tick(const std::chrono::nanoseconds& uptime, const std::chrono::nanoseconds& deltaTime) override;
