@@ -30,6 +30,9 @@ namespace PiSubmarine::Control::Vertical::Ballast
     {
         StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
         StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+
+        EXPECT_CALL(ballastController, SetTargetPosition(BallastFillNear(0.0)))
+            .WillOnce(Return(Error::Api::Result<void>{}));
         Controller controller{ballastController, depthProvider};
 
         EXPECT_CALL(
@@ -43,10 +46,28 @@ namespace PiSubmarine::Control::Vertical::Ballast
         EXPECT_TRUE(result.has_value());
     }
 
+    TEST(ControllerTest, StartupCommandsConfiguredInitialBallastFill)
+    {
+        StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
+        StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+
+        EXPECT_CALL(ballastController, SetTargetPosition(BallastFillNear(0.35)))
+            .WillOnce(Return(Error::Api::Result<void>{}));
+
+        Controller controller{
+            ballastController,
+            depthProvider,
+            Controller::Config{
+                .InitialBallastFill = ::PiSubmarine::Ballast::BallastFillFraction{0.35}}};
+    }
+
     TEST(ControllerTest, KeepCurrentUsesConfiguredInitialEquilibriumGuess)
     {
         StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
         StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+
+        EXPECT_CALL(ballastController, SetTargetPosition(BallastFillNear(0.0)))
+            .WillOnce(Return(Error::Api::Result<void>{}));
         Controller controller{
             ballastController,
             depthProvider,
@@ -57,6 +78,7 @@ namespace PiSubmarine::Control::Vertical::Ballast
                 .IntegralLimitMetersSeconds = 50.0,
                 .DepthDeadband = 0.05_m,
                 .MaximumBallastCorrection = NormalizedFraction{0.5},
+                .InitialBallastFill = ::PiSubmarine::Ballast::BallastFillFraction::Empty(),
                 .InitialEquilibriumBallastFill = ::PiSubmarine::Ballast::BallastFillFraction{0.25}}};
 
         EXPECT_CALL(depthProvider, GetState())
@@ -78,6 +100,9 @@ namespace PiSubmarine::Control::Vertical::Ballast
     {
         StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
         StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+
+        EXPECT_CALL(ballastController, SetTargetPosition(BallastFillNear(0.0)))
+            .WillOnce(Return(Error::Api::Result<void>{}));
         Controller controller{
             ballastController,
             depthProvider,
@@ -87,7 +112,8 @@ namespace PiSubmarine::Control::Vertical::Ballast
                 .DerivativeGainSeconds = 0.0,
                 .IntegralLimitMetersSeconds = 50.0,
                 .DepthDeadband = 0.05_m,
-                .MaximumBallastCorrection = NormalizedFraction{0.5}}};
+                .MaximumBallastCorrection = NormalizedFraction{0.5},
+                .InitialBallastFill = ::PiSubmarine::Ballast::BallastFillFraction::Empty()}};
 
         ASSERT_TRUE(controller.SetTarget(Api::Command::SetDepthTargetTo(5.0_m)).has_value());
 
@@ -104,6 +130,9 @@ namespace PiSubmarine::Control::Vertical::Ballast
     {
         StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
         StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+
+        EXPECT_CALL(ballastController, SetTargetPosition(BallastFillNear(0.0)))
+            .WillOnce(Return(Error::Api::Result<void>{}));
         Controller controller{
             ballastController,
             depthProvider,
@@ -113,7 +142,8 @@ namespace PiSubmarine::Control::Vertical::Ballast
                 .DerivativeGainSeconds = 0.0,
                 .IntegralLimitMetersSeconds = 50.0,
                 .DepthDeadband = 0.05_m,
-                .MaximumBallastCorrection = NormalizedFraction{0.5}}};
+                .MaximumBallastCorrection = NormalizedFraction{0.5},
+                .InitialBallastFill = ::PiSubmarine::Ballast::BallastFillFraction::Empty()}};
 
         ASSERT_TRUE(controller.SetTarget(Api::Command::SetDepthTargetTo(4.0_m)).has_value());
 
@@ -130,6 +160,9 @@ namespace PiSubmarine::Control::Vertical::Ballast
     {
         StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
         StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+
+        EXPECT_CALL(ballastController, SetTargetPosition(BallastFillNear(0.0)))
+            .WillOnce(Return(Error::Api::Result<void>{}));
         Controller controller{ballastController, depthProvider};
 
         ASSERT_TRUE(controller.SetTarget(Api::Command::SetDepthTargetTo(3.0_m)).has_value());
@@ -147,6 +180,9 @@ namespace PiSubmarine::Control::Vertical::Ballast
     {
         StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
         StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+
+        EXPECT_CALL(ballastController, SetTargetPosition(BallastFillNear(0.0)))
+            .WillOnce(Return(Error::Api::Result<void>{}));
         Controller controller{ballastController, depthProvider};
 
         EXPECT_CALL(depthProvider, GetState())
@@ -164,6 +200,9 @@ namespace PiSubmarine::Control::Vertical::Ballast
     {
         StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
         StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+
+        EXPECT_CALL(ballastController, SetTargetPosition(BallastFillNear(0.0)))
+            .WillOnce(Return(Error::Api::Result<void>{}));
         Controller controller{
             ballastController,
             depthProvider,
@@ -173,7 +212,8 @@ namespace PiSubmarine::Control::Vertical::Ballast
                 .DerivativeGainSeconds = 0.0,
                 .IntegralLimitMetersSeconds = 50.0,
                 .DepthDeadband = 0.01_m,
-                .MaximumBallastCorrection = NormalizedFraction{0.5}}};
+                .MaximumBallastCorrection = NormalizedFraction{0.5},
+                .InitialBallastFill = ::PiSubmarine::Ballast::BallastFillFraction::Empty()}};
 
         ASSERT_TRUE(controller.SetTarget(Api::Command::SetDepthTargetTo(5.0_m)).has_value());
 
@@ -196,6 +236,9 @@ namespace PiSubmarine::Control::Vertical::Ballast
     {
         StrictMock<::PiSubmarine::Ballast::Api::IControllerMock> ballastController;
         StrictMock<::PiSubmarine::Depth::Telemetry::Api::IProviderMock> depthProvider;
+
+        EXPECT_CALL(ballastController, SetTargetPosition(BallastFillNear(0.0)))
+            .WillOnce(Return(Error::Api::Result<void>{}));
         Controller controller{
             ballastController,
             depthProvider,
@@ -206,6 +249,7 @@ namespace PiSubmarine::Control::Vertical::Ballast
                 .IntegralLimitMetersSeconds = 50.0,
                 .DepthDeadband = 0.05_m,
                 .MaximumBallastCorrection = NormalizedFraction{0.5},
+                .InitialBallastFill = ::PiSubmarine::Ballast::BallastFillFraction::Empty(),
                 .InitialEquilibriumBallastFill = ::PiSubmarine::Ballast::BallastFillFraction{0.7}}};
 
         ASSERT_TRUE(controller.SetTarget(Api::Command::SetDepthTargetTo(5.0_m)).has_value());

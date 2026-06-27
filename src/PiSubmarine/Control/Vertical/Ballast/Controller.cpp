@@ -23,6 +23,7 @@ namespace PiSubmarine::Control::Vertical::Ballast
         , m_Config(config)
         , m_BallastBias(config.InitialEquilibriumBallastFill)
     {
+        static_cast<void>(m_BallastController.SetTargetPosition(m_Config.InitialBallastFill));
     }
 
     Error::Api::Result<void> Controller::SetTarget(const Api::Command& target)

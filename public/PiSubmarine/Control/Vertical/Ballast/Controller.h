@@ -25,6 +25,8 @@ namespace PiSubmarine::Control::Vertical::Ballast
             double IntegralLimitMetersSeconds = 50.0;
             Meters DepthDeadband = 0.05_m;
             NormalizedFraction MaximumBallastCorrection = NormalizedFraction{0.5};
+            ::PiSubmarine::Ballast::BallastFillFraction InitialBallastFill =
+                ::PiSubmarine::Ballast::BallastFillFraction::Empty();
             ::PiSubmarine::Ballast::BallastFillFraction InitialEquilibriumBallastFill =
                 ::PiSubmarine::Ballast::BallastFillFraction{NormalizedFraction{0.5}};
         };
